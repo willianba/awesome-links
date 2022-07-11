@@ -20,7 +20,7 @@ export const links = [
     description: "Utility-fist css framework",
     id: "6a9122b2-363b-4a4f-ad26-d6c55b51baed",
     imageUrl:
-      "https://tailwindcss.com/_next/static/media/twitter-large-card.85c0ff9e455da585949ff0aa50981857.jpg",
+      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fjefrydco.id%2F_nuxt%2Fimg%2Fhow-tailwind-css-help-reduce-workload-by-jefrydco.833f9b8.jpg&f=1&nofb=1",
     title: "TailwindCSS",
     url: "https://tailwindcss.com",
   },
