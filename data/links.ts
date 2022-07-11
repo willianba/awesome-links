@@ -12,7 +12,6 @@ export const links = [
     description: "Next Generation ORM for TypeScript and JavaScript",
     id: "2a3121b2-363b-4a4f-ad26-d6c35b41bade",
     imageUrl: "https://www.prisma.io/images/og-image.png",
-
     title: "Prisma",
     url: "https://prisma.io",
   },
