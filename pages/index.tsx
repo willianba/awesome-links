@@ -1,18 +1,37 @@
 import React from "react";
-import Head from "next/head";
 import { links } from "../data/links";
+import { gql, useQuery } from "@apollo/client";
+import { Link } from "@prisma/client";
+
+const AllLinksQuery = gql`
+  query AllLinks {
+    links {
+      id
+      title
+      url
+      description
+      imageUrl
+      category
+    }
+  }
+`;
 
 export default function Home() {
+  const { data, loading, error } = useQuery(AllLinksQuery);
+
+  if (error) {
+    return <p>Something went wrong.</p>;
+  }
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div>
-      <Head>
-        <title>Awesome Links</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <div className="container mx-auto max-w-5xl my-20">
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {links.map((link) => (
+          {data.links.map((link: Link) => (
             <li key={link.id} className="shadow  max-w-md  rounded">
               <img className="shadow-sm" src={link.imageUrl} />
               <div className="p-5 flex flex-col space-y-2">
