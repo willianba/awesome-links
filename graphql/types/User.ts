@@ -1,5 +1,4 @@
 import { enumType, objectType } from "nexus";
-import { Context } from "../context";
 import { Link } from "./Link";
 
 export const User = objectType({
@@ -12,7 +11,7 @@ export const User = objectType({
     t.field("role", { type: Role });
     t.list.field("bookmarks", {
       type: Link,
-      async resolve(parent, _args, ctx: Context) {
+      async resolve(parent, _args, ctx) {
         return await ctx.prisma.user
           .findUnique({
             where: {

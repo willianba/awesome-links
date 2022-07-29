@@ -12,4 +12,19 @@ export const schema = makeSchema({
     export: "Context",
     module: join(process.cwd(), "graphql", "context.ts"),
   },
+  sourceTypes: {
+    modules: [
+      {
+        module: "@prisma/client",
+        alias: "db",
+        typeMatch: (name) => new RegExp(`(?:interface|type|class)\\s+(${name}s?)\\W`, "g"),
+      },
+    ],
+    mapping: {
+      Date: "Date",
+      DateTime: "Date",
+      UUID: "string",
+    },
+  },
+  prettierConfig: join(process.cwd(), ".prettierrc"),
 });

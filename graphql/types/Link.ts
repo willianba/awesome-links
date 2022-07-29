@@ -1,6 +1,5 @@
-import { Link as LinkEntity } from "@prisma/client";
+import { Link as PrismaLink } from "@prisma/client";
 import { extendType, intArg, objectType, stringArg } from "nexus";
-import { Context } from "../context";
 import { User } from "./User";
 
 export const Link = objectType({
@@ -14,7 +13,7 @@ export const Link = objectType({
     t.string("category");
     t.list.field("users", {
       type: User,
-      async resolve(parent: LinkEntity, _args, ctx) {
+      async resolve(parent, _args, ctx) {
         return await ctx.prisma.link
           .findUnique({
             where: {
@@ -64,8 +63,8 @@ export const LinksQuery = extendType({
         first: intArg(),
         after: stringArg(),
       },
-      async resolve(_, args, ctx: Context) {
-        let queryResults: LinkEntity[] = null;
+      async resolve(_, args, ctx) {
+        let queryResults: PrismaLink[] = null;
 
         if (args.after) {
           // check if there is a cursor as the argument
@@ -106,7 +105,7 @@ export const LinksQuery = extendType({
               endCursor: lastElementId,
               hasNextPage: nextPageCount >= args.first, //if the number of items requested is greater than the response of the second query, we have another page
             },
-            edges: queryResults.map((link: LinkEntity) => ({
+            edges: queryResults.map((link: PrismaLink) => ({
               cursor: link.id,
               node: link,
             })),
