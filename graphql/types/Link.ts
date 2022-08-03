@@ -1,5 +1,5 @@
 import { Link as PrismaLink } from "@prisma/client";
-import { extendType, intArg, objectType, stringArg } from "nexus";
+import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
 import { User } from "./User";
 
 export const Link = objectType({
@@ -14,7 +14,7 @@ export const Link = objectType({
     t.list.field("users", {
       type: User,
       async resolve(parent, _args, ctx) {
-        return await ctx.prisma.link
+        return ctx.prisma.link
           .findUnique({
             where: {
               id: parent.id,
@@ -67,29 +67,23 @@ export const LinksQuery = extendType({
         let queryResults: PrismaLink[] = null;
 
         if (args.after) {
-          // check if there is a cursor as the argument
           queryResults = await ctx.prisma.link.findMany({
-            take: args.first, // the number of items to return from the database
-            skip: 1, // skip the cursor
+            take: args.first,
+            skip: 1,
             cursor: {
-              id: args.after, // the cursor
+              id: args.after,
             },
           });
         } else {
-          // if no cursor, this means that this is the first request
-          //  and we will return the first items in the database
           queryResults = await ctx.prisma.link.findMany({
             take: args.first,
           });
         }
-        // if the initial request returns links
+
         if (queryResults.length > 0) {
-          // get last element in previous result set
           const lastLinkInResults = queryResults[queryResults.length - 1];
-          // cursor we'll return in subsequent requests
           const lastElementId = lastLinkInResults.id;
 
-          // query after the cursor to check if we have nextPage
           const nextPageCount = await ctx.prisma.link.count({
             take: args.first,
             cursor: {
@@ -99,19 +93,17 @@ export const LinksQuery = extendType({
               id: "asc",
             },
           });
-          // return response
-          const result = {
+
+          return {
             pageInfo: {
               endCursor: lastElementId,
-              hasNextPage: nextPageCount >= args.first, //if the number of items requested is greater than the response of the second query, we have another page
+              hasNextPage: nextPageCount >= args.first,
             },
             edges: queryResults.map((link: PrismaLink) => ({
               cursor: link.id,
               node: link,
             })),
           };
-
-          return result;
         }
         //
         return {
@@ -121,6 +113,41 @@ export const LinksQuery = extendType({
           },
           edges: [],
         };
+      },
+    });
+  },
+});
+
+export const CreateLinkMutation = extendType({
+  type: "Mutation",
+  definition(t) {
+    t.nonNull.field("createLink", {
+      type: Link,
+      args: {
+        title: nonNull(stringArg()),
+        url: nonNull(stringArg()),
+        imageUrl: nonNull(stringArg()),
+        category: nonNull(stringArg()),
+        description: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user) {
+          throw new Error("You need to be logged in to perform an action");
+        }
+
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            email: ctx.user.email,
+          },
+        });
+
+        if (user.role !== "ADMIN") {
+          throw new Error("You do not have permission to perform action");
+        }
+
+        return ctx.prisma.link.create({
+          data: { ...args },
+        });
       },
     });
   },

@@ -12,7 +12,7 @@ export const User = objectType({
     t.list.field("bookmarks", {
       type: Link,
       async resolve(parent, _args, ctx) {
-        return await ctx.prisma.user
+        return ctx.prisma.user
           .findUnique({
             where: {
               id: parent.id,
