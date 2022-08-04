@@ -36,6 +36,31 @@ const Admin = () => {
     onCompleted: () => reset(),
   });
 
+  const uploadPhoto = async (e) => {
+    const file = e.target.files[0];
+    const filename = encodeURIComponent(file.name);
+    const res = await fetch(`/api/upload-image?file=${filename}`);
+    const data = await res.json();
+    const formData = new FormData();
+
+    // @ts-ignore
+    Object.entries({ ...data.fields, file }).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    toast.promise(
+      fetch(data.url, {
+        method: "POST",
+        body: formData,
+      }),
+      {
+        loading: "Uploading...",
+        success: "Image successfully uploaded!🎉",
+        error: `Upload failed 😥 Please try again ${error}`,
+      }
+    );
+  };
+
   const onSubmit = async (data: FieldValues) => {
     const { title, url, category, description } = data;
     const imageUrl = "https://via.placeholder.com/300";
@@ -97,6 +122,17 @@ const Admin = () => {
             name="category"
             type="text"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </label>
+        <label className="block">
+          <span className="text-gray-700">Upload a .png or .jpg image (max 1MB).</span>
+          <input
+            placeholder="Image"
+            {...register("image", { required: true })}
+            onChange={uploadPhoto}
+            type="file"
+            accept="image/png, image/jpeg"
+            name="image"
           />
         </label>
 

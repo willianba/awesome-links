@@ -12,6 +12,7 @@
     "@auth0/nextjs-auth0": "^1.9.1",
     "@prisma/client": "^4.0.0",
     "apollo-server-micro": "^3.10.0",
+    "aws-sdk": "^2.1188.0",
     "graphql": "^16.5.0",
     "micro-cors": "^0.1.1",
     "next": "^12.2.2",
