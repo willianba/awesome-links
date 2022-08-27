@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prebuild": "npm run prisma:generate",
+    "prisma:generate": "prisma generate --data-proxy"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
