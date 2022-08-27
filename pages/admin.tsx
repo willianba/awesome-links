@@ -4,6 +4,7 @@ import { gql, useMutation } from "@apollo/client";
 import toast, { Toaster } from "react-hot-toast";
 import { getSession } from "@auth0/nextjs-auth0";
 import { prisma } from "../lib/prisma";
+import { PresignedPost } from "aws-sdk/clients/s3";
 
 const CreateLinkMutation = gql`
   mutation (
@@ -36,14 +37,13 @@ const Admin = () => {
     onCompleted: () => reset(),
   });
 
-  const uploadPhoto = async (e) => {
+  const uploadPhoto = async (e: any) => {
     const file = e.target.files[0];
     const filename = encodeURIComponent(file.name);
     const res = await fetch(`/api/upload-image?file=${filename}`);
-    const data = await res.json();
+    const data: PresignedPost = await res.json();
     const formData = new FormData();
 
-    // @ts-ignore
     Object.entries({ ...data.fields, file }).forEach(([key, value]) => {
       formData.append(key, value);
     });
